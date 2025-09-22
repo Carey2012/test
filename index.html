@@ -1,41 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>主页 - 文章管理系统</title>
+    <meta charset="UTF-8">
+    <title>我的博客</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>欢迎来到我的文章管理系统</h1>
-  <p>以下是所有文章的列表：</p>
+    <header>
+        <h1>我的前端博客</h1>
+        <a href="admin.html">管理文章</a> <!-- 跳转到管理页面的链接 -->
+    </header>
 
-  <ul id="articleList">
-    <!-- 文章列表将会在这里显示 -->
-  </ul>
+    <main id="main-content">
+        <h2>文章列表</h2>
+        <div id="article-list">
+            <!-- 文章列表会被JavaScript动态填充在这里 -->
+        </div>
+    </main>
 
-  <!-- 提供一个链接，供管理员访问管理面板 -->
-  <h3>如果你是管理员，请访问管理面板：<a href="/admin">管理面板</a></h3>
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. 从LocalStorage尝试获取数据
+            const savedPosts = JSON.parse(localStorage.getItem('blogPosts')) || [];
 
-  <script>
-    // 加载文章数据
-    function loadArticles() {
-      const articles = JSON.parse(localStorage.getItem('articles')) || [];
-      const list = document.getElementById("articleList");
-      list.innerHTML = '';  // 清空现有文章列表
+            const articleListEl = document.getElementById('article-list');
 
-      // 遍历并显示所有文章
-      articles.forEach((article, index) => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-          <h3>${article.title}</h3>
-          <p>${article.content}</p>
-        `;
-        list.appendChild(li);
-      });
-    }
-
-    // 页面加载时加载文章列表
-    loadArticles();
-  </script>
+            if (savedPosts.length === 0) {
+                articleListEl.innerHTML = '<p>还没有文章，快去管理页面创建一篇吧！</p>';
+            } else {
+                // 2. 遍历所有文章数据，生成HTML
+                let html = '';
+                savedPosts.forEach(post => {
+                    html += `
+                        <article class="post">
+                            <h3>${post.title}</h3>
+                            <p><small>发布时间: ${new Date(post.date).toLocaleDateString()}</small></p>
+                            <div>${post.content}</div>
+                            <hr>
+                        </article>
+                    `;
+                });
+                articleListEl.innerHTML = html;
+            }
+        });
+    </script>
 </body>
 </html>
