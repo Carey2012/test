@@ -3,10 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>我的GitHub项目</title>
+  <title>文章管理系统</title>
 </head>
 <body>
-  <h1>欢迎来到我的GitHub项目主页！</h1>
-  <p>这是我的第一个项目主页，正在建设中！</p>
+  <h1>文章管理系统</h1>
+
+  <!-- 新增文章表单 -->
+  <h2>新增文章</h2>
+  <form id="createArticleForm">
+    <label for="title">标题:</label>
+    <input type="text" id="title" required><br>
+    <label for="content">内容:</label><br>
+    <textarea id="content" required></textarea><br>
+    <button type="submit">新增文章</button>
+  </form>
+
+  <h2>文章列表</h2>
+  <ul id="articleList">
+    <!-- 文章列表会显示在这里 -->
+  </ul>
+
+  <script>
+    // 加载文章数据
+    function loadArticles() {
+      fetch('articles.json')
+        .then(response => response.json())
+        .then(data => {
+          const list = document.getElementById("articleList");
+          list.innerHTML = '';
+          data.forEach((article, index) => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+              <h3>${article.title}</h3>
+              <p>${article.content}</p>
+            `;
+            list.appendChild(li);
+          });
+        });
+    }
+
+    // 新增文章
+    document.getElementById("createArticleForm").onsubmit = function(e) {
+      e.preventDefault();
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+
+      // 模拟新增文章（注意：GitHub Pages 无法存储新数据，手动更新 `articles.json` 文件）
+      alert('文章创建成功！');
+      // 此时你可以通过手动更新 `articles.json` 来添加新的文章
+
+      loadArticles();  // 重新加载文章列表
+    };
+
+    // 页面加载时加载文章列表
+    loadArticles();
+  </script>
 </body>
 </html>
