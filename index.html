@@ -26,20 +26,19 @@
   <script>
     // 加载文章数据
     function loadArticles() {
-      fetch('articles.json')
-        .then(response => response.json())
-        .then(data => {
-          const list = document.getElementById("articleList");
-          list.innerHTML = '';
-          data.forEach((article, index) => {
-            const li = document.createElement("li");
-            li.innerHTML = `
-              <h3>${article.title}</h3>
-              <p>${article.content}</p>
-            `;
-            list.appendChild(li);
-          });
-        });
+      const articles = JSON.parse(localStorage.getItem('articles')) || [];
+      const list = document.getElementById("articleList");
+      list.innerHTML = '';  // 清空现有文章列表
+
+      articles.forEach((article, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <h3>${article.title}</h3>
+          <p>${article.content}</p>
+          <button onclick="deleteArticle(${index})">删除</button>
+        `;
+        list.appendChild(li);
+      });
     }
 
     // 新增文章
@@ -48,12 +47,29 @@
       const title = document.getElementById("title").value;
       const content = document.getElementById("content").value;
 
-      // 模拟新增文章（注意：GitHub Pages 无法存储新数据，手动更新 `articles.json` 文件）
-      alert('文章创建成功！');
-      // 此时你可以通过手动更新 `articles.json` 来添加新的文章
+      const newArticle = { title, content };
 
+      // 从 localStorage 获取现有文章并添加新文章
+      const articles = JSON.parse(localStorage.getItem('articles')) || [];
+      articles.push(newArticle);
+
+      // 保存更新后的文章列表到 localStorage
+      localStorage.setItem('articles', JSON.stringify(articles));
+
+      alert('文章创建成功！');
       loadArticles();  // 重新加载文章列表
     };
+
+    // 删除文章
+    function deleteArticle(index) {
+      const articles = JSON.parse(localStorage.getItem('articles')) || [];
+      articles.splice(index, 1);  // 删除指定文章
+
+      // 更新 localStorage 中的文章列表
+      localStorage.setItem('articles', JSON.stringify(articles));
+
+      loadArticles();  // 重新加载文章列表
+    }
 
     // 页面加载时加载文章列表
     loadArticles();
