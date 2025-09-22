@@ -3,25 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>文章管理系统</title>
+  <title>主页 - 文章管理系统</title>
 </head>
 <body>
-  <h1>文章管理系统</h1>
+  <h1>欢迎来到我的文章管理系统</h1>
+  <p>以下是所有文章的列表：</p>
 
-  <!-- 新增文章表单 -->
-  <h2>新增文章</h2>
-  <form id="createArticleForm">
-    <label for="title">标题:</label>
-    <input type="text" id="title" required><br>
-    <label for="content">内容:</label><br>
-    <textarea id="content" required></textarea><br>
-    <button type="submit">新增文章</button>
-  </form>
-
-  <h2>文章列表</h2>
   <ul id="articleList">
-    <!-- 文章列表会显示在这里 -->
+    <!-- 文章列表将会在这里显示 -->
   </ul>
+
+  <!-- 提供一个链接，供管理员访问管理面板 -->
+  <h3>如果你是管理员，请访问管理面板：<a href="/admin">管理面板</a></h3>
 
   <script>
     // 加载文章数据
@@ -30,45 +23,15 @@
       const list = document.getElementById("articleList");
       list.innerHTML = '';  // 清空现有文章列表
 
+      // 遍历并显示所有文章
       articles.forEach((article, index) => {
         const li = document.createElement("li");
         li.innerHTML = `
           <h3>${article.title}</h3>
           <p>${article.content}</p>
-          <button onclick="deleteArticle(${index})">删除</button>
         `;
         list.appendChild(li);
       });
-    }
-
-    // 新增文章
-    document.getElementById("createArticleForm").onsubmit = function(e) {
-      e.preventDefault();
-      const title = document.getElementById("title").value;
-      const content = document.getElementById("content").value;
-
-      const newArticle = { title, content };
-
-      // 从 localStorage 获取现有文章并添加新文章
-      const articles = JSON.parse(localStorage.getItem('articles')) || [];
-      articles.push(newArticle);
-
-      // 保存更新后的文章列表到 localStorage
-      localStorage.setItem('articles', JSON.stringify(articles));
-
-      alert('文章创建成功！');
-      loadArticles();  // 重新加载文章列表
-    };
-
-    // 删除文章
-    function deleteArticle(index) {
-      const articles = JSON.parse(localStorage.getItem('articles')) || [];
-      articles.splice(index, 1);  // 删除指定文章
-
-      // 更新 localStorage 中的文章列表
-      localStorage.setItem('articles', JSON.stringify(articles));
-
-      loadArticles();  // 重新加载文章列表
     }
 
     // 页面加载时加载文章列表
