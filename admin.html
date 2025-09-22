@@ -2,74 +2,301 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>文章管理</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        #password-protection {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            padding: 20px;
+            color: #333;
         }
-        #password-protection div {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
             text-align: center;
         }
-        #password-protection input {
-            margin: 1rem 0;
-            padding: 0.5rem;
-            width: 200px;
-        }
-        #admin-content {
+        
+        .admin-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
             display: none;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        h2 {
+            color: #3498db;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .description {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        .btn-logout {
+            background: #e74c3c;
+            width: auto;
+            padding: 10px 20px;
+        }
+        
+        .btn-logout:hover {
+            background: #c0392b;
+        }
+        
+        .btn-delete {
+            background: #e74c3c;
+            width: auto;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .article-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .articles-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .article-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .article-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .article-date {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .article-content {
+            color: #34495e;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .article-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .articles-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
         }
     </style>
 </head>
 <body>
-
-    <div id="password-protection">
-        <div>
-            <h3>需要管理员密码</h3>
-            <input type="password" id="admin-password" placeholder="请输入密码">
-            <br>
-            <button id="login-btn">进入后台</button>
-            <p id="password-error" style="color: red; display: none;">密码错误！</p>
-        </div>
-    </div>
-
-    <div id="admin-content">
-        <header>
-            <h1>文章管理后台</h1>
-            <a href="index.html">返回主页</a>
-            <button onclick="logout()" style="margin-left: 10px;">退出登录</button>
-        </header>
-        <main>
-            <h2>写新文章</h2>
-            <form id="article-form">
-                <div>
-                    <label for="title">标题：</label>
-                    <input type="text" id="title" required>
-                </div>
-                <div>
-                    <label for="content">内容：</label>
-                    <textarea id="content" rows="10" required></textarea>
-                </div>
-                <button type="submit">发布文章</button>
-            </form>
-
-            <h2>管理现有文章</h2>
-            <div id="existing-articles">
-                <!-- 现有文章列表会在这里生成 -->
+    <div class="container">
+        <!-- 登录界面 -->
+        <div class="login-container" id="login-container">
+            <div class="logo">
+                <i class="fas fa-blog"></i> 文章管理系统
             </div>
-        </main>
+            <h1>管理员登录</h1>
+            <p class="description">请输入密码访问管理后台</p>
+            
+            <div class="input-group">
+                <label for="admin-password"><i class="fas fa-lock"></i> 密码</label>
+                <input type="password" id="admin-password" placeholder="请输入您的密码">
+            </div>
+            
+            <button id="login-btn">
+                <i class="fas fa-sign-in-alt"></i> 登录
+            </button>
+            
+            <p class="error-message" id="password-error">
+                <i class="fas fa-exclamation-circle"></i> 密码错误，请重试！
+            </p>
+            
+            <p style="margin-top: 20px; color: #7f8c8d; font-size: 14px;">
+                提示：初始密码为 "admin123"
+            </p>
+        </div>
+        
+        <!-- 管理后台 -->
+        <div class="admin-container" id="admin-container">
+            <div class="header">
+                <div>
+                    <h1><i class="fas fa-blog"></i> 文章管理后台</h1>
+                    <p>创建和管理您的文章内容</p>
+                </div>
+                <div class="header-actions">
+                    <a href="index.html" style="text-decoration: none;">
+                        <button style="background: #2ecc71;">
+                            <i class="fas fa-home"></i> 返回主页
+                        </button>
+                    </a>
+                    <button class="btn-logout" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> 退出
+                    </button>
+                </div>
+            </div>
+            
+            <div class="article-form">
+                <h2><i class="fas fa-plus-circle"></i> 创建新文章</h2>
+                
+                <div class="input-group">
+                    <label for="title"><i class="fas fa-heading"></i> 标题</label>
+                    <input type="text" id="title" placeholder="输入文章标题">
+                </div>
+                
+                <div class="input-group">
+                    <label for="content"><i class="fas fa-edit"></i> 内容</label>
+                    <textarea id="content" rows="5" placeholder="输入文章内容"></textarea>
+                </div>
+                
+                <button id="publish-btn">
+                    <i class="fas fa-paper-plane"></i> 发布文章
+                </button>
+            </div>
+            
+            <h2><i class="fas fa-list"></i> 文章列表</h2>
+            <div class="articles-list" id="articles-list">
+                <!-- 文章列表将在这里动态生成 -->
+            </div>
+        </div>
     </div>
 
     <script>
@@ -117,111 +344,135 @@
             return rh(a)+rh(b)+rh(c)+rh(d);
         }
 
-        // 设置密码哈希（这里使用"admin123"的MD5哈希）
-        // 你可以使用在线工具生成你自己的密码哈希
-        const correctPasswordHash = '0192023a7bbd73250516f069df18b500'; // "admin123"的MD5
+        // 设置密码哈希（"admin123"的MD5哈希）
+        const correctPasswordHash = '0192023a7bbd73250516f069df18b500';
 
+        // DOM元素
+        const loginContainer = document.getElementById('login-container');
+        const adminContainer = document.getElementById('admin-container');
+        const passwordInput = document.getElementById('admin-password');
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const errorMessage = document.getElementById('password-error');
+        const publishBtn = document.getElementById('publish-btn');
+        const titleInput = document.getElementById('title');
+        const contentInput = document.getElementById('content');
+        const articlesList = document.getElementById('articles-list');
+
+        // 检查密码
         function checkPassword() {
-            const inputPassword = document.getElementById('admin-password').value;
-            const errorElement = document.getElementById('password-error');
+            const inputPassword = passwordInput.value;
             
-            // 计算输入密码的MD5
+            if (!inputPassword) {
+                errorMessage.textContent = "请输入密码";
+                errorMessage.style.display = "block";
+                return;
+            }
+            
             const inputHash = md5(inputPassword);
-            
-            console.log("输入密码哈希:", inputHash); // 用于调试
-            console.log("正确密码哈希:", correctPasswordHash); // 用于调试
             
             if (inputHash === correctPasswordHash) {
                 // 密码正确
                 sessionStorage.setItem('adminAuthenticated', 'true');
-                document.getElementById('password-protection').style.display = 'none';
-                document.getElementById('admin-content').style.display = 'block';
+                loginContainer.style.display = 'none';
+                adminContainer.style.display = 'block';
+                loadPosts();
             } else {
                 // 密码错误
-                errorElement.style.display = 'block';
+                errorMessage.textContent = "密码错误，请重试！";
+                errorMessage.style.display = "block";
+                passwordInput.value = "";
             }
         }
 
+        // 退出登录
         function logout() {
             sessionStorage.removeItem('adminAuthenticated');
-            location.reload();
+            adminContainer.style.display = 'none';
+            loginContainer.style.display = 'block';
+            passwordInput.value = "";
         }
 
-        // 页面加载时检查是否已经验证过
-        document.addEventListener('DOMContentLoaded', function() {
-            if (sessionStorage.getItem('adminAuthenticated') === 'true') {
-                document.getElementById('password-protection').style.display = 'none';
-                document.getElementById('admin-content').style.display = 'block';
-            }
-            
-            // 绑定登录按钮点击事件
-            document.getElementById('login-btn').addEventListener('click', checkPassword);
-            
-            // 绑定回车键提交
-            document.getElementById('admin-password').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    checkPassword();
-                }
-            });
-        });
-
-        // 文章管理功能
-        const form = document.getElementById('article-form');
-
+        // 加载文章
         function loadPosts() {
             const savedPosts = JSON.parse(localStorage.getItem('blogPosts')) || [];
-            let html = '';
+            articlesList.innerHTML = '';
 
             if (savedPosts.length === 0) {
-                document.getElementById('existing-articles').innerHTML = '<p>暂无文章。</p>';
+                articlesList.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #7f8c8d;">暂无文章，请创建您的第一篇文章！</p>';
                 return;
             }
 
             savedPosts.forEach((post, index) => {
-                html += `
-                    <div class="post-item">
-                        <h4>${post.title}</h4>
-                        <p><small>${new Date(post.date).toLocaleString()}</small></p>
-                        <button onclick="deletePost(${index})">删除</button>
-                        <hr>
+                const articleElement = document.createElement('div');
+                articleElement.className = 'article-card';
+                articleElement.innerHTML = `
+                    <div class="article-title">${post.title}</div>
+                    <div class="article-date">${new Date(post.date).toLocaleString()}</div>
+                    <div class="article-content">${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}</div>
+                    <div class="article-actions">
+                        <button class="btn-delete" onclick="deletePost(${index})">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
                     </div>
                 `;
+                articlesList.appendChild(articleElement);
             });
-
-            document.getElementById('existing-articles').innerHTML = html;
         }
 
-        window.deletePost = function(index) {
+        // 删除文章
+        function deletePost(index) {
             const savedPosts = JSON.parse(localStorage.getItem('blogPosts')) || [];
             savedPosts.splice(index, 1);
             localStorage.setItem('blogPosts', JSON.stringify(savedPosts));
             loadPosts();
-            alert('文章已删除！');
-        };
+        }
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
-
+        // 发布文章
+        function publishPost() {
+            const title = titleInput.value;
+            const content = contentInput.value;
+            
+            if (!title || !content) {
+                alert('请填写标题和内容');
+                return;
+            }
+            
             const newPost = {
                 title: title,
                 content: content,
                 date: new Date().toISOString()
             };
-
+            
             const savedPosts = JSON.parse(localStorage.getItem('blogPosts')) || [];
             savedPosts.push(newPost);
             localStorage.setItem('blogPosts', JSON.stringify(savedPosts));
-
-            alert('文章发布成功！');
-            form.reset();
+            
+            titleInput.value = "";
+            contentInput.value = "";
+            
             loadPosts();
+        }
+
+        // 事件监听
+        loginBtn.addEventListener('click', checkPassword);
+        logoutBtn.addEventListener('click', logout);
+        publishBtn.addEventListener('click', publishPost);
+        
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
         });
 
-        // 页面加载时加载文章
-        document.addEventListener('DOMContentLoaded', loadPosts);
+        // 页面加载时检查是否已经验证过
+        document.addEventListener('DOMContentLoaded', function() {
+            if (sessionStorage.getItem('adminAuthenticated') === 'true') {
+                loginContainer.style.display = 'none';
+                adminContainer.style.display = 'block';
+                loadPosts();
+            }
+        });
     </script>
 </body>
 </html>
