@@ -3,21 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>管理面板</title>
+  <title>文章管理系统</title>
 </head>
 <body>
-  <h1>文章管理系统 - 管理面板</h1>
+  <h1>欢迎来到文章管理系统</h1>
+
+  <h3>以下是公开的文章：</h3>
+  <div id="articleList"></div>
 
   <!-- 登录表单 -->
-  <div id="loginForm">
-    <h2>请输入密码以管理文章</h2>
+  <div id="loginForm" style="display: none;">
+    <h2>请输入管理员密码</h2>
     <form id="login">
       <input type="password" id="password" placeholder="请输入密码" required>
       <button type="submit">提交</button>
     </form>
   </div>
 
-  <!-- 管理文章表单（默认隐藏，只有验证通过后显示） -->
+  <!-- 管理面板 -->
   <div id="adminPanel" style="display: none;">
     <h2>新增文章</h2>
     <form id="createArticleForm">
@@ -30,47 +33,62 @@
   </div>
 
   <script>
-    const adminPassword = "your-password";  // 设定管理员密码
+    const adminPassword = "20120701Lkr"; // 替换为你自己的密码
+    let articles = JSON.parse(localStorage.getItem('articles')) || [];
+
+    // 加载文章列表
+    function loadArticles() {
+      const list = document.getElementById('articleList');
+      list.innerHTML = ''; // 清空现有的文章列表
+
+      // 显示所有文章
+      articles.forEach((article, index) => {
+        const div = document.createElement('div');
+        div.innerHTML = `<h3>${article.title}</h3><p>${article.content}</p>`;
+        list.appendChild(div);
+      });
+    }
 
     // 登录验证
     document.getElementById("login").onsubmit = function(e) {
       e.preventDefault();
       const password = document.getElementById("password").value;
       if (password === adminPassword) {
-        // 密码正确，显示管理面板
-        localStorage.setItem('isAdmin', true);  // 保存登录状态
+        localStorage.setItem('isAdmin', true); // 记录管理员登录状态
         document.getElementById("loginForm").style.display = 'none';
         document.getElementById("adminPanel").style.display = 'block';
-        alert("密码正确，欢迎进入管理面板！");
+        loadArticles(); // 加载文章
       } else {
         alert("密码错误，请重新输入！");
       }
     };
 
-    // 新增文章
+    // 提交新增文章
     document.getElementById("createArticleForm").onsubmit = function(e) {
       e.preventDefault();
       const title = document.getElementById("title").value;
       const content = document.getElementById("content").value;
 
+      // 创建新文章并存储到 localStorage
       const newArticle = { title, content };
-
-      // 获取现有文章并添加新文章
-      const articles = JSON.parse(localStorage.getItem('articles')) || [];
       articles.push(newArticle);
-
-      // 更新 localStorage
-      localStorage.setItem('articles', JSON.stringify(articles));
+      localStorage.setItem('articles', JSON.stringify(articles)); // 保存文章到 localStorage
 
       alert('文章创建成功！');
-      document.getElementById("createArticleForm").reset();  // 重置表单
+      loadArticles(); // 重新加载文章列表
+      document.getElementById("createArticleForm").reset(); // 清空表单
     };
 
-    // 页面加载时判断是否已登录
+    // 页面加载时的逻辑
     window.onload = function() {
       if (localStorage.getItem('isAdmin')) {
+        // 如果已经是管理员，显示管理面板
         document.getElementById("loginForm").style.display = 'none';
         document.getElementById("adminPanel").style.display = 'block';
+        loadArticles(); // 加载文章
+      } else {
+        // 如果没有登录，显示密码输入框
+        document.getElementById("loginForm").style.display = 'block';
       }
     };
   </script>
