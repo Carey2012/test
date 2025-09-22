@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>文章管理</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 密码模态框的样式 */
+        #password-protection {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        #password-protection div {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        #password-protection input {
+            margin: 1rem 0;
+            padding: 0.5rem;
+            width: 200px;
+        }
+        /* 默认隐藏主内容 */
+        #admin-content {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 密码输入模态框 -->
+    <div id="password-protection">
+        <div>
+            <h3>需要管理员密码</h3>
+            <input type="password" id="admin-password" placeholder="请输入密码">
+            <br>
+            <button onclick="checkPassword()">进入后台</button>
+            <p id="password-error" style="color: red; display: none;">密码错误！</p>
+        </div>
+    </div>
+
+    <!-- 原本的管理后台内容，默认隐藏 -->
+    <div id="admin-content">
+        <header>
+            <h1>文章管理后台</h1>
+            <a href="index.html">返回主页</a>
+            <button onclick="logout()" style="margin-left: 10px;">退出登录</button>
+        </header>
+        <main>
+            <!-- ... 你原有的表单和文章列表代码在这里 ... -->
+            <h2>写新文章</h2>
+            <form id="article-form">
+                <!-- ... 表单内容 ... -->
+            </form>
+            <h2>管理现有文章</h2>
+            <div id="existing-articles"></div>
+        </main>
+    </div>
+
+    <script>
+        // --- 密码验证逻辑 ---
+
+        // 1. 设置一个经过哈希的密码（这里密码明文是 "myblog123"）
+        // 你可以用这个工具生成你自己的：https://www.md5hashgenerator.com/
+        // 只需把 'myblog123' 替换成你想要的密码，然后生成其MD5，替换下面的值。
+        const correctPasswordHash = '548655ed2f0117e09788c2002100c049'; // "password" 的MD5
+
+        function checkPassword() {
+            const inputPassword = document.getElementById('admin-password').value;
+            const errorElement = document.getElementById('password-error');
+
+            // 2. 对输入的密码进行MD5哈希，然后与保存的正确哈希值对比
+            // 使用 Web Crypto API 进行哈希（现代浏览器支持）
+            (async () => {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(inputPassword);
+                const hashBuffer = await crypto.subtle.digest('MD5', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+                if (inputHash === correctPasswordHash) {
+                    // 密码正确
+                    sessionStorage.setItem('adminAuthenticated', 'true'); // 设置会话标记
+                    document.getElementById('password-protection').style.display = 'none';
+                    document.getElementById('admin-content').style.display = 'block';
+                } else {
+                    // 密码错误
+                    errorElement.style.display = 'block';
+                }
+            })();
+        }
+
+        function logout() {
+            sessionStorage.removeItem('adminAuthenticated');
+            location.reload();
+        }
+
+        // 3. 页面加载时检查是否已经验证过
+        document.addEventListener('DOMContentLoaded', function() {
+            if (sessionStorage.getItem('adminAuthenticated') === 'true') {
+                // 如果会话标记存在，直接显示内容
+                document.getElementById('password-protection').style.display = 'none';
+                document.getElementById('admin-content').style.display = 'block';
+            }
+        });
+
+        // --- 你原有的文章管理逻辑代码在这里 ---
+        // const form = document.getElementById('article-form');
+        // ... 其余原有代码 ...
+    </script>
+</body>
+</html>
